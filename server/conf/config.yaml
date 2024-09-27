@@ -1,0 +1,6 @@
+database:
+  user: root
+  password: -15d79-a
+  host: sh-cynosdbmysql-grp-if129muo.sql.tencentcdb.com
+  port: 27607
+  name: demo
