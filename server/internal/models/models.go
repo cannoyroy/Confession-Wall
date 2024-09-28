@@ -4,6 +4,34 @@ import (
 	"time"
 )
 
+type LoginReq struct {
+	// 密码
+	Password string `json:"password"`
+	// 用户，具有唯一性
+	Username string `json:"username"`
+}
+
+type RegReq struct {
+	// 密码，8-16位
+	Password string `json:"password"`
+	// 用户名，3-20，不得有空格
+	Username string `json:"username"`
+}
+
+type ConfessionNewReq struct {
+	Anonymous   int    `json:"Anonymous"`
+	Content     string `json:"content"`
+	ScheduledAt string `json:"ScheduledAt"`
+	UserID      int    `json:"user_id"`
+}
+
+type ConfessionEditReq struct {
+	Anonymous     int    `json:"anonymous"`
+	Content       string `json:"content"`
+	PostID        int    `json:"post_id"`
+	ScheduledTime string `json:"scheduled_time"`
+}
+
 type Accounts struct {
 	Username  string    `gorm:"column:username;size:20;not null;check:length(username) BETWEEN 3 AND 20"`               // 对应 username 列，长度为 20，不能为空
 	UserID    int       `gorm:"column:user_id;primaryKey;autoIncrement"`                                                // 对应 user_id 列，设置为主键和自增
