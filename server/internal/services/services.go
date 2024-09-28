@@ -23,17 +23,17 @@ func GetPost(c *gin.Context) {
 	var BlacklistAll []models.Blacklist
 	if err := db.Where("user_id = ?", UserID).Find(&BlacklistAll).Error; err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal s!!erver error"})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
 		return
 	}
 	// log.Println(BlacklistAll)
 	type Post_1 struct {
-		PostID       int
-		SenderID     int
-		Content      string
-		CreatedAt    time.Time
-		ReportStatus int
-		ScheduledAt  time.Time
+		PostID      int
+		SenderID    int
+		Username    string
+		Content     string
+		CreatedAt   time.Time
+		ScheduledAt time.Time
 	}
 	// for _, k := range BlacklistAll {
 	// 	log.Println(k.BlockedID)
@@ -48,13 +48,16 @@ func GetPost(c *gin.Context) {
 			}
 		}
 		if a == 1 {
+			var point = v.SenderID
+			var Accounts_a []models.Accounts
+			db.Where("user_id = ?", point).Find(&Accounts_a)
 			var post = Post_1{
-				PostID:       v.PostID,
-				SenderID:     v.SenderID,
-				Content:      v.Content,
-				CreatedAt:    v.CreatedAt,
-				ReportStatus: v.ReportStatus,
-				ScheduledAt:  v.ScheduledAt,
+				PostID:      v.PostID,
+				SenderID:    v.SenderID,
+				Username:    Accounts_a[0].Username,
+				Content:     v.Content,
+				CreatedAt:   v.CreatedAt,
+				ScheduledAt: v.ScheduledAt,
 			}
 			OUTposts = append(OUTposts, post)
 		}

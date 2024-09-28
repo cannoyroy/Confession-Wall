@@ -21,6 +21,8 @@ type UserInfo struct {
 	ContactWechat string `gorm:"column:contact_wechat;size:255"`                                               // 对应 contact_wechat 列，长度为 255
 	ContactOther  string `gorm:"column:contact_other;size:255"`                                                // 对应 contact_other 列，长度为 255
 	Region        string `gorm:"column:region;size:255;not null"`                                              // 对应 region 列，长度为 255，不能为空
+	ImgURL        string `gorm:"type:varchar(255);not null;character_set:utf8mb3;collate:utf8mb3_general_ci"`
+	OtherInfo     string `gorm:"type:varchar(255);default:null"`
 }
 type Posts struct {
 	PostID       int       `gorm:"column:post_id;primaryKey;autoIncrement"`                        // 帖子ID，主键，自增
@@ -29,6 +31,7 @@ type Posts struct {
 	CreatedAt    time.Time `gorm:"column:created_at;default:CURRENT_TIMESTAMP"`                    // 创建时间，默认当前时间
 	ReportStatus int       `gorm:"column:report_status;not null;check:report_status IN (0, 1, 2)"` // 举报状态，0未举报，1举报审核中，2举报成功
 	ScheduledAt  time.Time `gorm:"column:scheduled_time;default:CURRENT_TIMESTAMP"`                // 定时发送时间，默认当前时间
+	Anonymous    int       `db:"anonymous"`                                                        // 使用标签来映射数据库列名
 }
 type Report struct {
 	ReportID   int       `gorm:"column:report_id;primaryKey;autoIncrement"` // 举报ID，自增主键
