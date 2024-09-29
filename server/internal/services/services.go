@@ -3,6 +3,7 @@ package services
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -243,5 +244,155 @@ func ConfessionDele(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func BlackGet(c *gin.Context) {
+	UserID := c.DefaultQuery("user_id", "0")
+	var SelfBlack []models.Blacklist
+	if err := db.Where("user_id = ?", UserID).Find(&SelfBlack).Error; err != nil {
+		// log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"post_list": SelfBlack}, "msg": "success"})
+}
+
+func BlackDele(c *gin.Context) {
+	BlockedID := c.DefaultQuery("blocked_id", "0")
+	UserID := c.DefaultQuery("user_id", "0")
+
+	var TarBlack models.Blacklist
+	if err := db.Where("blocked_id = ? and user_id = ?", BlockedID, UserID).First(&TarBlack).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"code": 404, "data": nil, "msg": "不存在该黑名单"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	if err := db.Delete(&TarBlack).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func BlacklistPost(c *gin.Context) {
+	BlockedID := c.DefaultQuery("blocked_id", "0")
+	UserID := c.DefaultQuery("user_id", "0")
+
+	var newBlack models.Blacklist
+	var user models.Accounts
+	if err := db.Where("user_id = ?", BlockedID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusOK, gin.H{"code": 200506, "data": nil, "msg": "用户不存在"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	var err error
+	newBlack.UserID, err = strconv.Atoi(UserID)
+	if err != nil {
+		// 错误处理
+		log.Printf("Error converting UserID to int: %v\n", err)
+		return
+	}
+	newBlack.BlockedID, err = strconv.Atoi(BlockedID)
+	newBlack.BlockedUsername = user.Username
+	if err != nil {
+		// 错误处理
+		log.Printf("Error converting UserID to int: %v\n", err)
+		return
+	}
+
+	if err := db.Create(&newBlack).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 501, "msg": "Internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func ProfileGet(c *gin.Context) {
+	UserID := c.DefaultQuery("user_id", "0")
+	var SelfProfile []models.UserInfo
+	if err := db.Where("user_id = ?", UserID).Find(&SelfProfile).Error; err != nil {
+		// log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"post_list": SelfProfile}, "msg": "success"})
+}
+
+func ProfileEdit(c *gin.Context) {
+	var req models.ProfileEditReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "Invalid request"})
+		return
+	}
+
+	var TarProfile models.UserInfo
+	if err := db.Where("user_id = ?", req.UserID).First(&TarProfile).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"code": 404, "data": nil, "msg": "Post not found or does not belong to the user"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	TarProfile.Gender = req.Gender
+	TarProfile.ContactTele = req.ContactTele
+	TarProfile.ContactQQ = req.ContactQq
+	TarProfile.ContactWechat = req.ContactWechat
+	TarProfile.ContactOther = req.ContactOther
+	TarProfile.Region = req.Region
+	TarProfile.ImgURL = req.ImgURL
+	TarProfile.OtherInfo = req.OtherInfo
+
+	if err := db.Save(&TarProfile).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func ProfilePost(c *gin.Context) {
+	var req models.ProfileEditReq
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "Invalid request"})
+		return
+	}
+
+	var newProfile models.UserInfo
+	var user models.Accounts
+	if err := db.Where("user_id = ?", req.UserID).First(&user).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusOK, gin.H{"code": 200506, "data": nil, "msg": "用户不存在"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	newProfile.UserID = req.UserID
+	newProfile.Username = user.Username
+	newProfile.Gender = req.Gender
+	newProfile.ContactTele = req.ContactTele
+	newProfile.ContactQQ = req.ContactQq
+	newProfile.ContactWechat = req.ContactWechat
+	newProfile.ContactOther = req.ContactOther
+	newProfile.Region = req.Region
+	newProfile.ImgURL = req.ImgURL
+	newProfile.OtherInfo = req.OtherInfo
+	newProfile.CreatedAt = time.Now()
+	if err := db.Create(&newProfile).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 501, "msg": "Internal server error"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
 }

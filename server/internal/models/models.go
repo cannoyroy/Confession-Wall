@@ -32,6 +32,18 @@ type ConfessionEditReq struct {
 	ScheduledTime string `json:"scheduled_time"`
 }
 
+type ProfileEditReq struct {
+	ContactOther  string `json:"contact_other"`
+	ContactQq     string `json:"contact_qq"`
+	ContactTele   string `json:"contact_tele"`
+	ContactWechat string `json:"contact_wechat"`
+	Gender        string `json:"gender"`
+	ImgURL        string `json:"img_url"`
+	OtherInfo     string `json:"other_info"`
+	Region        string `json:"region"`
+	UserID        int    `json:"user_id"`
+}
+
 type Accounts struct {
 	Username  string    `gorm:"column:username;size:20;not null;check:length(username) BETWEEN 3 AND 20"`               // 对应 username 列，长度为 20，不能为空
 	UserID    int       `gorm:"column:user_id;primaryKey;autoIncrement"`                                                // 对应 user_id 列，设置为主键和自增
@@ -41,17 +53,19 @@ type Accounts struct {
 }
 
 type UserInfo struct {
-	UserID        int    `gorm:"column:user_id;primaryKey;autoIncrement"`                                      // 对应 user_id 列，设置为主键和自增
-	Username      string `gorm:"column:username;size:20;not null;check:length(username) BETWEEN 3 AND 20"`     // 对应 username 列，长度为 20，不能为空
-	Gender        string `gorm:"column:gender;not null;type:ENUM('male', 'female', 'other', 'not_disclosed')"` // 对应 gender 列，不能为空，使用 ENUM 类型
-	ContactTele   string `gorm:"column:contact_tele;size:255;not null"`                                        // 对应 contact_tele 列，长度为 255，不能为空
-	ContactQQ     string `gorm:"column:contact_qq;size:255"`                                                   // 对应 contact_qq 列，长度为 255
-	ContactWechat string `gorm:"column:contact_wechat;size:255"`                                               // 对应 contact_wechat 列，长度为 255
-	ContactOther  string `gorm:"column:contact_other;size:255"`                                                // 对应 contact_other 列，长度为 255
-	Region        string `gorm:"column:region;size:255;not null"`                                              // 对应 region 列，长度为 255，不能为空
-	ImgURL        string `gorm:"type:varchar(255);not null;character_set:utf8mb3;collate:utf8mb3_general_ci"`
-	OtherInfo     string `gorm:"type:varchar(255);default:null"`
+	UserID        int       `gorm:"column:user_id;primaryKey;autoIncrement"`                                      // 对应 user_id 列，设置为主键和自增
+	Username      string    `gorm:"column:username;size:20;not null;check:length(username) BETWEEN 3 AND 20"`     // 对应 username 列，长度为 20，不能为空
+	Gender        string    `gorm:"column:gender;not null;type:ENUM('male', 'female', 'other', 'not_disclosed')"` // 对应 gender 列，不能为空，使用 ENUM 类型
+	ContactTele   string    `gorm:"column:contact_tele;size:255;not null"`                                        // 对应 contact_tele 列，长度为 255，不能为空
+	ContactQQ     string    `gorm:"column:contact_qq;size:255"`                                                   // 对应 contact_qq 列，长度为 255
+	ContactWechat string    `gorm:"column:contact_wechat;size:255"`                                               // 对应 contact_wechat 列，长度为 255
+	ContactOther  string    `gorm:"column:contact_other;size:255"`                                                // 对应 contact_other 列，长度为 255
+	Region        string    `gorm:"column:region;size:255;not null"`                                              // 对应 region 列，长度为 255，不能为空
+	ImgURL        string    `gorm:"type:varchar(255);not null;character_set:utf8mb3;collate:utf8mb3_general_ci"`
+	OtherInfo     string    `gorm:"type:varchar(255);default:null"`
+	CreatedAt     time.Time `db:"created_at"`
 }
+
 type Posts struct {
 	PostID       int       `gorm:"column:post_id;primaryKey;autoIncrement"`                        // 帖子ID，主键，自增
 	SenderID     int       `gorm:"column:sender_id;not null"`                                      // 发送者ID，不能为空

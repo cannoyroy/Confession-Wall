@@ -36,8 +36,32 @@ func Init(r *gin.Engine) {
 		services.ConfessionDele(c)
 	})
 
+	r.GET("/blacklist/manage", func(c *gin.Context) {
+		services.BlackGet(c)
+	})
+
+	r.DELETE("/blacklist/delete", func(c *gin.Context) {
+		services.BlackDele(c)
+	})
+
+	r.POST("/blacklist/new", func(c *gin.Context) {
+		services.BlacklistPost(c)
+	})
+
 	r.GET("/main", func(c *gin.Context) {
 		services.GetPost(c)
+	})
+
+	r.GET("/profile", func(c *gin.Context) {
+		services.ProfileGet(c)
+	})
+
+	r.PUT("/profile/edit", func(c *gin.Context) {
+		services.ProfileEdit(c)
+	})
+
+	r.POST("/profile/new", func(c *gin.Context) {
+		services.ProfilePost(c)
 	})
 
 }
