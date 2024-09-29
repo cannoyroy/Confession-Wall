@@ -1,5 +1,6 @@
 # 基本信息
 
+腾讯云MySQL主机密码为 -15d79-a
 
 ## 人员
 
@@ -136,11 +137,23 @@ APIFOX文档
 
 ### 前后端交互
 
+Reg：
+
+{    "username": "延芳",    "password": "occ56ut" }
+
+{    "code": 200,    "data": null,    "msg": "success" }
+
+{    "code": 200502,    "data": null,    "msg": "用户名不得有空格" }
+
+{    "code": 200503,    "data": null,    "msg": "密码长度必须在8-16位" }
+
+{    "code": 200504,    "data": null,    "msg": "用户名长度必须在3-20位" }
+
+{    "code": 200505,    "data": null,    "msg": "用户名已存在" }
+
 Login：
 
 {    "username": "123",    "password": "12345678" }
-
-
 
 {"code":200,"data":{"user_id":2,"user_type":1},"msg":"success"}
 
@@ -201,8 +214,6 @@ Login：
 
 
 
-
-
 - /admin/reports
 
    — 查看所有举报的帖子
@@ -217,7 +228,7 @@ Login：
 
 
 
-- /admin/posts
+- /admin/posts——暂时不做
 
    — 管理所有帖子
 
@@ -300,16 +311,30 @@ type Accounts struct {
 地区：
 
 ```sql
-CREATE TABLE user_info (
-  user_id INT(8) PRIMARY KEY AUTO_INCREMENT,
-  username VARCHAR(20) NOT NULL CHECK (LENGTH(username) BETWEEN 3 AND 20),
-  gender ENUM('male', 'female', 'other', 'not_disclosed') NOT NULL,
-  contact_tele VARCHAR(255) NOT NULL,
-  contact_qq VARCHAR(255),
-  contact_wechat VARCHAR(255),
-  contact_other VARCHAR(255),
-  region VARCHAR(255) NOT NULL
-);
+CREATE TABLE `user_infos` (
+    `user_id` bigint NOT NULL AUTO_INCREMENT,
+    `username` varchar(20) NOT NULL,
+    `gender` enum(
+        'male',
+        'female',
+        'other',
+        'not_disclosed'
+    ) NOT NULL,
+    `contact_tele` varchar(255) NOT NULL,
+    `contact_qq` varchar(255) DEFAULT NULL,
+    `contact_wechat` varchar(255) DEFAULT NULL,
+    `contact_other` varchar(255) DEFAULT NULL,
+    `region` varchar(255) NOT NULL,
+    `img_url` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+    `other_info` varchar(255) DEFAULT NULL,
+    `CreatedAt` date NOT NULL,
+    PRIMARY KEY (`user_id`),
+    CONSTRAINT `chk_user_infos_username` CHECK (
+        (
+            length(`username`) between 3 and 20
+        )
+    )
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3
 ```
 
 ```go
@@ -336,6 +361,8 @@ type UserInfo struct {
 创建时间 
 
 举报状态：0未举报，1举报审核中，2举报成功
+
+匿名状态：0不匿名，1匿名
 
 ```sql
 CREATE TABLE posts (
