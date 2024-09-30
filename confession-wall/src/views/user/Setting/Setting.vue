@@ -4,7 +4,7 @@ const route = useRoute();
 </script>
 
 <template>
-  <h1 style="margin-left: 2em;">MAIN页面</h1>
+  <h1 style="margin-left: 2em;">setting页面</h1>
 </template>
 
 <script>

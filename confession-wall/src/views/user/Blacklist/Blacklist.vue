@@ -4,7 +4,8 @@ const route = useRoute();
 </script>
 
 <template>
-  <h1 style="margin-left: 2em;">MAIN页面</h1>
+  <h1 style="margin-left: 2em;">Blacklist页面</h1>
+  <RouterView />
 </template>
 
 <script>

@@ -88,17 +88,29 @@ export default {
             console.log(userInfo)
 
             if (response.data.data.user_type == 1) {
-              alert("登陆成功\n点击图标随时返回主界面")
+              alert("登陆成功\n点击图标随时返回主界面");
               // const token = true; // 假设返回的 token 存在 response.data.token
               // const expiresIn = 60; // 设置有效期为60秒（1小时）
               // const expiresAt = Date.now() + expiresIn * 1000; // 计算过期时间
 
               // localStorage.setItem('token', token);
               // localStorage.setItem('expiresAt', expiresAt); // 存储过期时间
+              
 
-              this.$router.push({ name: 'main', query: userInfo});
+              axios.get("http://127.0.0.1:8080/profile", {params: { user_id: response.data.data.user_id}})
+                .then(response => {
+                  if (!Array.isArray(response.data.data.post_list) || response.data.data.post_list.length === 0) {
+                    alert("新用户请填写基本信息");
+                    this.$router.push({ name: 'newprofile', query: userInfo});
+                  } else {
+                    this.$router.push({ name: 'main', query: userInfo});
+                  }
+                })
+
+
+              
             }else{
-              alert("登陆成功\n点击图标随时返回主界面")
+              alert("登陆成1功\n点击图标随时返回主界面")
               this.$router.push({ name: '/login'});
             }
 
@@ -194,7 +206,7 @@ export default {
 }
 </script> -->
 
-<style lang="scss">
+<style lang="scss" scoped>
 $gray: #8E9AAF;
 $lavender: #CBC0D3;
 $pale: #EAC7CC;

@@ -1,3 +1,8 @@
+<script setup>
+import { useRoute} from 'vue-router';
+
+const route = useRoute();
+</script>
 <template>
     <!-- Navbar -->
     <nav id="navbar">
@@ -11,62 +16,68 @@
         </a>
         
         </li>
+            <li class="navbar-item flexbox-left">
+                <a class="navbar-item-inner flexbox-left">
+                    <div class="navbar-item-inner-icon-wrapper flexbox">
+                    </div>
+                    <RouterLink :to="{ name: 'main', query : route.query}" class="link-text"> 
+                        <span class="link-text">Main</span>
+                    </RouterLink>
+                </a>
+            </li>
+        
+
+        
         <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
-                <span class="link-text">Main</span>
+                <RouterLink :to="{ name: 'profile', query : route.query}" class="link-text">
+                    <span class="link-text">个人主页</span>
+                </RouterLink>
             </a>
         </li>
         <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
-                <span class="link-text">个人主页</span>
-            </a>
-        </li>
-        <li class="navbar-item flexbox-left">
-            <a class="navbar-item-inner flexbox-left">
-                <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
-                </div>
+                <RouterLink :to="{ name: 'confession', query : route.query}" class="link-text">
                 <span class="link-text">表白管理</span>
+            </RouterLink>
             </a>
         </li>
         <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
+                <RouterLink :to="{ name: 'blacklist', query : route.query}" class="link-text">
                 <span class="link-text">拉黑列表</span>
+                </RouterLink>
             </a>
         </li>
-        <li class="navbar-item flexbox-left">
+        <!-- <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
                 <span class="link-text">查看评论</span>
             </a>
-        </li>
+        </li> -->
         <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
+                <RouterLink :to="{ name: 'setting', query : route.query}" class="link-text">
                 <span class="link-text">设置</span>
+                </RouterLink>
             </a>
         </li>
-        <li class="navbar-item flexbox-left">
+        <!-- <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
-                <ion-icon name="search-outline"></ion-icon>
                 </div>
                 <span class="link-text">Search</span>
             </a>
-        </li>
+        </li> -->
     </ul>
     </nav>
 
@@ -395,6 +406,8 @@
             font-size: calc(var(--navbar-buttons) - 1rem);
         }
         .link-text {
+            text-decoration: none;
+            color: #fcf6f6;
             margin: 0;
             width: 0;
             text-overflow: ellipsis;
@@ -406,6 +419,7 @@
         #navbar:hover .link-text {
             width: calc(100% - calc(5rem - 8px));
             opacity: 1;
+            text-decoration: none;
         }
 
         /* ======

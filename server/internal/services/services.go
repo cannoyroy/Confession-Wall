@@ -52,13 +52,13 @@ func Reg(c *gin.Context) {
 	}
 	// 密码长度大于8位小于16位
 	if len(req.Password) <= 8 || len(req.Password) >= 16 {
-		c.JSON(http.StatusOK, gin.H{"code": 200503, "data": nil, "msg": "密码长度必须在8-16位"})
+		c.JSON(http.StatusOK, gin.H{"code": 200503, "data": nil, "msg": "密码长度必须在9-15位"})
 		return
 	}
 
 	// 用户名长度大于3位小于20位
 	if len(req.Username) <= 3 || len(req.Username) >= 20 {
-		c.JSON(http.StatusOK, gin.H{"code": 200504, "data": nil, "msg": "用户名长度必须在3-20位"})
+		c.JSON(http.StatusOK, gin.H{"code": 200504, "data": nil, "msg": "用户名长度必须在4-19位"})
 		return
 	}
 
