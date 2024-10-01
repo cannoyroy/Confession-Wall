@@ -8,7 +8,7 @@ import Blacklist from '../views/user/Blacklist/Blacklist.vue'
 import Profile from '../views/user/Profile/Profile.vue'
 import EditProfile from '../views/user/Profile/EditProfile.vue'
 import NewProfile from '../views/user/Profile/NewProfile.vue'
-import ProfileC from ',,/views/user/Profile/ProfileC.vue'
+import ProfileC from '../views/user/Profile/ProfileC.vue'
 import Setting from '../views/user/Setting/Setting.vue'
 
 const router = createRouter({
