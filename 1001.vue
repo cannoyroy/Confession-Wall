@@ -1,17 +1,16 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import ElementPlus from 'element-plus';
+<script setup>
+import { useRoute} from 'vue-router';
 import 'element-plus/dist/index.css';
+const route = useRoute();
 
-const app = createApp(App);
-app.use(ElementPlus);
-app.mount('#app');
+</script>
+
 <template>
     <div>
       <el-radio-group v-model="gender">
-        <el-radio label="male">男</el-radio>
-        <el-radio label="female">女</el-radio>
-        <el-radio label="other">其他</el-radio>
+        <el-radio :value="male">男</el-radio>
+        <el-radio :value="female">女</el-radio>
+        <el-radio :value="other">其他</el-radio>
       </el-radio-group>
   
       <el-input v-model="contact.phone" placeholder="联系电话"></el-input>
@@ -65,4 +64,4 @@ app.mount('#app');
       }
     }
   };
-  </script>
+</script>
