@@ -32,6 +32,11 @@ type ConfessionEditReq struct {
 	ScheduledTime string `json:"scheduled_time"`
 }
 
+type BlacklistRequest struct {
+	UserID    string `json:"user_id"`
+	BlockedID string `json:"blocked_id"`
+}
+
 type ProfileEditReq struct {
 	ContactOther  string `json:"contact_other"`
 	ContactQq     string `json:"contact_qq"`

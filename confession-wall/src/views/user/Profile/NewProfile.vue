@@ -70,9 +70,11 @@ const route = useRoute();
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
       return {
+        user_id: this.$route.params.user_id,
         gender: '',
         maleValue: 'male', // 定义male的值
         otherValue: 'other', // 定义other的值
@@ -112,17 +114,33 @@ export default {
     },
     methods: {
         handleSubmit(){
-            if(this.gender == '' ||  this.selectedRegion == '' || this.avatarUrl == '' || this.introduction == ''){
-                alert('请填写必要信息!')
-            }else{
-                // 
+            const newProfile={
+                user_id: Number(this.$route.query.user_id),
+                gender: this.gender,
+                contact_tele: this.contact.phone,
+                contact_qq: this.contact.qq,
+                contact_wechat: this.contact.wechat,
+                contact_other: this.contact.other,
+                region: this.selectedRegion,
+                img_url: this.avatarUrl,
+                other_info: this.introduction
             }
-
-            console.log(this.gender);
-            console.log(this.contact);
-            console.log(this.selectedRegion);
-            console.log(this.avatarUrl);
-            console.log(this.introduction);
+            if(this.gender == '' ||  this.selectedRegion == '' || this.avatarUrl == '' || this.introduction == ''){
+                this.$message.error('请填写必要信息!');
+            }else{
+                axios.post('http://127.0.0.1:8080/profile/new', newProfile)
+                .then(res => {
+                    
+                    console.log(res);
+                    this.$message.success('设置成功');
+                    this.$router.push({ name: 'main', query: this.$route.query});
+                })
+                .catch(err => {
+                    console.log(err);
+                    console.log(newProfile);
+                    this.$message.error('设置失败');
+                }); 
+            }
         }
     }
 }

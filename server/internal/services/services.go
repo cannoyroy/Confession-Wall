@@ -281,11 +281,23 @@ func BlackDele(c *gin.Context) {
 }
 
 func BlacklistPost(c *gin.Context) {
-	BlockedID := c.DefaultQuery("blocked_id", "0")
-	UserID := c.DefaultQuery("user_id", "0")
+	// BlockedID := c.DefaultQuery("blocked_id", "0")
+	// log.Println(BlockedID)
+	// UserID := c.DefaultQuery("user_id", "0")
+
+	var req models.BlacklistRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		// 如果解析失败，返回错误
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Println(err.Error())
+		return
+	}
+	BlockedID := req.BlockedID
+	UserID := req.UserID
 
 	var newBlack models.Blacklist
 	var user models.Accounts
+
 	if err := db.Where("user_id = ?", BlockedID).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusOK, gin.H{"code": 200506, "data": nil, "msg": "用户不存在"})
@@ -371,6 +383,8 @@ func ProfilePost(c *gin.Context) {
 
 	var newProfile models.UserInfo
 	var user models.Accounts
+	log.Println(55555)
+	log.Println(req)
 	if err := db.Where("user_id = ?", req.UserID).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusOK, gin.H{"code": 200506, "data": nil, "msg": "用户不存在"})
