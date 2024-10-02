@@ -397,14 +397,43 @@ func ProfilePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
 }
 
-"func ReportPost(c *gin.Context) {
-	var req models.Posts
+func Report(c *gin.Context) {
+	var req models.Report
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "Invalid request"})
 		return
 	}
 
+	c.POST("/report", func(c *gin.Context) {
+		userId, exists := c.Get("UserID")
+		if exists {
+		   // 将用户 ID 填充到举报数据中
+			ReportID: userId.(int),
+		} else {
+		   c.JSON(401, gin.H{"message": "User not logged in"})
+		}
+	 })
+
+	ReporterID := c.PostForm("ReporterID")
+    PostID := c.PostForm("PostID")
+	Reason := c.PostForm("Reason")
+
+	 // PostID不能为空
+	if  PostID == "" {
+		c.JSON(http.StatusOK, gin.H{"code": 200501, "data": nil, "msg": "帖子id不得为空"})
+		return
+	}
+	 // Reporter不能为空
+	if Reporter == "" {
+		c.JSON(http.StatusOK, gin.H{"code": 200501, "data": nil, "msg": "举报者id不得为空"})
+		return
+	}
+	 // Reason不能为空
+	if Reason == "" {
+		c.JSON(http.StatusOK, gin.H{"code": 200501, "data": nil, "msg": "原因不得为空"})
+		return
+	}
 
 	// 举报不能重复
 	var submit models.Report
@@ -421,7 +450,7 @@ func ProfilePost(c *gin.Context) {
 		return
 	}
 
-	newsubmit := models.Report{
+	newreport := models.Report{
 		ReportID: req.ReportID,
 		PostID: req.PostID,
 		ReporterID: req.ReporterID,
@@ -429,13 +458,13 @@ func ProfilePost(c *gin.Context) {
 		CreatedAt: time.Now(),
 	}
 
-	if err := db.Create(&newsubmit).Error; err != nil {
+	if err := db.Create(&newreport).Error; err != nil {
 		println(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
-}"
+}
 
 func ReportGet(c *gin.Context){
 	var reportG models.Report
