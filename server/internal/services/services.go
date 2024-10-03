@@ -356,14 +356,39 @@ func ProfileEdit(c *gin.Context) {
 		return
 	}
 
-	TarProfile.Gender = req.Gender
-	TarProfile.ContactTele = req.ContactTele
-	TarProfile.ContactQQ = req.ContactQq
-	TarProfile.ContactWechat = req.ContactWechat
-	TarProfile.ContactOther = req.ContactOther
-	TarProfile.Region = req.Region
-	TarProfile.ImgURL = req.ImgURL
-	TarProfile.OtherInfo = req.OtherInfo
+	// TarProfile.Gender = req.Gender
+	// TarProfile.ContactTele = req.ContactTele
+	// TarProfile.ContactQQ = req.ContactQq
+	// TarProfile.ContactWechat = req.ContactWechat
+	// TarProfile.ContactOther = req.ContactOther
+	// TarProfile.Region = req.Region
+	// TarProfile.ImgURL = req.ImgURL
+	// TarProfile.OtherInfo = req.OtherInfo
+
+	if req.Gender != "none" {
+		TarProfile.Gender = req.Gender
+	}
+	if req.ContactTele != "none" {
+		TarProfile.ContactTele = req.ContactTele
+	}
+	if req.ContactQq != "none" {
+		TarProfile.ContactQQ = req.ContactQq
+	}
+	if req.ContactWechat != "none" {
+		TarProfile.ContactWechat = req.ContactWechat
+	}
+	if req.ContactOther != "none" {
+		TarProfile.ContactOther = req.ContactOther
+	}
+	if req.Region != "none" {
+		TarProfile.Region = req.Region
+	}
+	if req.ImgURL != "none" {
+		TarProfile.ImgURL = req.ImgURL
+	}
+	if req.OtherInfo != "none" {
+		TarProfile.OtherInfo = req.OtherInfo
+	}
 
 	if err := db.Save(&TarProfile).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
