@@ -15,12 +15,12 @@ onMounted(() => {
 axiosGetPostlist();
 })
 function formatTime(date) {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
+const year = date.getFullYear();
+const month = (date.getMonth() + 1).toString().padStart(2, '0');
+const day = date.getDate().toString().padStart(2, '0');
+const hours = date.getHours().toString().padStart(2, '0');
+const minutes = date.getMinutes().toString().padStart(2, '0');
+return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 
@@ -70,7 +70,7 @@ function axiosDeleteDeletePost(postId) {
                 "post_id": postId
             }
         }
-        axios.delete("/api/student/post", data).then((res) => {
+        axios.delete("http://127.0.0.1:8080/confessions/manage/delete", data).then((res) => {
             if (res.data.code === 200) {
                 alert("删除成功");
                 
@@ -93,11 +93,11 @@ function axiosPutEditPost(postId,event) {
         }
         if (data.content.trim() !== "") {
 
-            axios.put("/api/student/post", data).then((res) => {
+            axios.put("http://127.0.0.1:8080/confessions/manage/edit", data).then((res) => {
                 if (res.data.code === 200) {
                     alert("修改成功");
                     event.target.parentNode.children[4].value = "";
-                    funcToStuPost();
+                    
                 }
                 else {
                     alert(res.data.msg);
