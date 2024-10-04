@@ -1,17 +1,28 @@
 <script setup>
+import { onMounted } from 'vue';
 import { useRoute} from 'vue-router';
 
 const route = useRoute();
 
+onMounted(async () => {
+    if (route.query.type === '2') {
+      console.log('User type is 2, proceeding with page mount.');
+    }else{
+      alert("请确认访问权限");
+      window.location.href = "http://localhost:5173/";
+    }
+  });
 </script>
 
 <script>
 export default {
   mounted() {
+    
     console.log('board mounted')
     console.log('Token:', localStorage.getItem('token'), 'Expires at:', localStorage.getItem('expiresAt'));
   },
   methods: {
+    
     logout() {
       localStorage.setItem('token', false); // 注销时设置 token 为 0
       console.log('logout')
@@ -39,8 +50,8 @@ export default {
                 <a class="navbar-item-inner flexbox-left">
                     <div class="navbar-item-inner-icon-wrapper flexbox">
                     </div>
-                    <RouterLink :to="{ name: 'main', query : route.query}" class="link-text"> 
-                        <span class="link-text">Main</span>
+                    <RouterLink :to="{ name: 'adget', query : route.query}" class="link-text"> 
+                        <span class="link-text">查看举报</span>
                     </RouterLink>
                 </a>
             </li>
@@ -51,8 +62,8 @@ export default {
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
                 </div>
-                <RouterLink :to="{ name: 'profile', query : route.query}" class="link-text">
-                    <span class="link-text">个人主页</span>
+                <RouterLink :to="{ name: 'adhandle', query : route.query}" class="link-text">
+                    <span class="link-text">处理举报</span>
                 </RouterLink>
             </a>
         </li>
@@ -60,27 +71,12 @@ export default {
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">
                 </div>
-                <RouterLink :to="{ name: 'confession', query : route.query}" class="link-text">
-                <span class="link-text">表白管理</span>
+                <RouterLink :to="{ name: 'adhistory', query : route.query}" class="link-text">
+                <span class="link-text">举报历史</span>
             </RouterLink>
             </a>
         </li>
-        <li class="navbar-item flexbox-left">
-            <a class="navbar-item-inner flexbox-left">
-                <div class="navbar-item-inner-icon-wrapper flexbox">
-                </div>
-                <RouterLink :to="{ name: 'blacklist', query : route.query}" class="link-text">
-                <span class="link-text">拉黑列表</span>
-                </RouterLink>
-            </a>
-        </li>
-        <!-- <li class="navbar-item flexbox-left">
-            <a class="navbar-item-inner flexbox-left">
-                <div class="navbar-item-inner-icon-wrapper flexbox">
-                </div>
-                <span class="link-text">查看评论</span>
-            </a>
-        </li> -->
+        
         <li class="navbar-item flexbox-left">
             <a class="navbar-item-inner flexbox-left">
                 <div class="navbar-item-inner-icon-wrapper flexbox">

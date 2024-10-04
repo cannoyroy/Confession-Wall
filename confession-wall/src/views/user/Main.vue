@@ -8,6 +8,17 @@ const posts = ref([]);
 const router = useRouter();
 
 
+const reportReason_1 = ref('');
+const characterLimit = 250; // 定义字符限制
+
+function limitCharacters() {
+  if (reportReason_1.value.length > characterLimit) {
+    reportReason_1.value = reportReason_1.value.substring(0, characterLimit);
+  }
+}
+
+
+
 onMounted(async () => {
         try {
           const response = await axios.get('http://127.0.0.1:8080/main', {
@@ -75,14 +86,15 @@ function closeReportModal() {
 
 async function submitReport() {
   const postData = {
-      reporter_id: String(route.query.user_id),
-      post_id: reportSenderId.value,
+      reporter_id: parseInt(route.query.user_id),
+      post_id: parseInt(reportSenderId.value),
       reason: reportReason.value
   };
   try {
     const response = await axios.post("http://127.0.0.1:8080/report", postData);
     console.log(response.data);
     alert('举报成功！');
+    console.log(postData.reporter_id)
     closeReportModal();
   } catch (error) {
     // console.log(postData)
@@ -147,17 +159,7 @@ function navigateToProfile(userID) {
             <!-- <td>09/0411/1996</td> -->
             
             <td>
-              <div class="dropdown">
-                <!-- <button class="btn btn-sm btn-icon" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="bx bx-dots-horizontal-rounded" data-toggle="tooltip" data-placement="top"
-                        title="Actions"></i>
-                    </button> -->
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                  <!-- <a class="dropdown-item" href="#"><i class="bx bxs-pencil mr-2"></i>拉黑该用户</a> -->
-                  <!-- <a class="dropdown-item text-danger" href="#"><i class="bx bxs-trash mr-2"></i> 拉黑该用户 </a> -->
-                </div>
-              </div>
-              <td>{{ post.ScheduledAt.slice(0, 10)+"  "+post.ScheduledAt.slice(11, 16) }}</td>
+              <td>{{ post.CreatedAt.slice(0, 10)+"  "+post.CreatedAt.slice(11, 16) }}</td>
             </td>
           </tr>
         </div>
@@ -173,7 +175,13 @@ function navigateToProfile(userID) {
     <span class="close" @click="closeReportModal">&times;</span>
     <div class="form-container">
       <p>请输入举报理由：</p>
-      <textarea v-model="reportReason"></textarea>
+      <textarea
+        v-model="reportReason_1"
+        id="reportReason_1"
+        placeholder="请输入举报原因，不得超过250字"
+        @input="limitCharacters"
+      ></textarea>
+
       <button class="submit-button" @click="submitReport">提交举报</button>
     </div>
   </div>

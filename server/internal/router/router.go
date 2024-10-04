@@ -64,4 +64,20 @@ func Init(r *gin.Engine) {
 		services.ProfilePost(c)
 	})
 
+	r.POST("/report", func(c *gin.Context) {
+		services.ReportPost(c)
+	})
+
+	r.GET("/admin/reports", func(c *gin.Context) {
+		services.GetReport(c)
+	})
+
+	r.POST("/admin/reports/handle", func(c *gin.Context) {
+		services.ReportHandle(c)
+	})
+
+	r.GET("/admin/reports/history", func(c *gin.Context) {
+		services.GetHistory(c)
+	})
+
 }

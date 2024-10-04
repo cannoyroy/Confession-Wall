@@ -18,7 +18,7 @@
             <input type="text" placeholder="username" v-model="username" required>
             <input type="password" placeholder="password" v-model="password" required>
             <div class="checkbox">
-                <input type="checkbox" id="remember" /><label for="remember">remember me</label>
+                <input type="checkbox" id="remember" v-model="isRemember"/><label for="remember">remember me</label>
             </div>
 
             <button class="button submit">login</button>
@@ -26,15 +26,15 @@
         </div>
         </div>
         <div class="leftbox">
-        <h2 class="title"><span>BLOOM</span>&<br>BOUQUET</h2>
-        <p class="desc">pick your perfect <span>bouquet</span></p>
+        <h2 class="title"><span>MOM</span>ENTO</h2>
+        <p class="desc"><span>ROMANCE</span>&<br>REMEMBRANCE</p>
         <img class="flower smaller" src="https://image.ibb.co/d5X6pn/1357d638624297b.jpg" alt="1357d638624297b" border="0">
         <p class="account">have an account?</p>
         <button class="button" id="signin">login</button>
         </div>
         <div class="rightbox">
-        <h2 class="title"><span>BLOOM</span>&<br>BOUQUET</h2>
-        <p class="desc"> pick your perfect <span>bouquet</span></p>
+          <h2 class="title"><span>MOM</span>ENTO</h2>
+          <p class="desc"><span>ROMANCE</span>&<br>REMEMBRANCE</p>
         <img class="flower" src="https://preview.ibb.co/jvu2Un/0057c1c1bab51a0.jpg"/>
         <p class="account">don't have an account?</p>
         <button class="button" id="signup">sign up</button>
@@ -53,13 +53,14 @@ export default {
       password: '',
       usernameR: '',
       passwordR: '',
-      passwordRC: ''
+      passwordRC: '',
+      isRemember: 0
     };
   },
   mounted() {
-    // localStorage.setItem('token', 0); // 每次加载页面时初始化 token 为 0
-    // console.log('in login page')
-    // console.log('Token:', localStorage.getItem('token'), 'Expires at:', localStorage.getItem('expiresAt'));
+    localStorage.setItem('token', 0); // 每次加载页面时初始化 token 为 0
+    console.log('in login page')
+    console.log('Token:', localStorage.getItem('token'), 'Expires at:', localStorage.getItem('expiresAt'));
 
     let script = document.createElement('script');
         script.type = 'text/javascript';
@@ -83,19 +84,30 @@ export default {
 
             const userInfo = {
               user_id: response.data.data.user_id,
-              username: response.data.data.username
+              username: response.data.data.username,
+              type: 1 // 1表示用户 2表示Admin
             };
             console.log(userInfo)
 
             if (response.data.data.user_type == 1) {
               alert("登陆成功\n点击图标随时返回主界面");
-              // const token = true; // 假设返回的 token 存在 response.data.token
-              // const expiresIn = 60; // 设置有效期为60秒（1小时）
-              // const expiresAt = Date.now() + expiresIn * 1000; // 计算过期时间
+              const token = true; // 假设返回的 token 存在 response.data.token
+              var cnt = 60;
+              if (this.isRemember == true){
+                cnt = 60*24*7;
+                // alert("222")
+              }else{
+                // alert("333")
+                cnt = 60;
+              }
+              const expiresIn = cnt; // 设置有效期为60秒（1小时）
+              // alert(expiresIn)
+              const expiresAt = Date.now() + expiresIn * 1000; // 计算过期时间
 
-              // localStorage.setItem('token', token);
-              // localStorage.setItem('expiresAt', expiresAt); // 存储过期时间
+              localStorage.setItem('token', token);
+              localStorage.setItem('expiresAt', expiresAt); // 存储过期时间
               
+              userInfo.type = 1;
 
               axios.get("http://127.0.0.1:8080/profile", {params: { user_id: response.data.data.user_id}})
                 .then(response => {
@@ -110,8 +122,27 @@ export default {
 
               
             }else{
-              alert("登陆成1功\n点击图标随时返回主界面")
-              this.$router.push({ name: '/login'});
+
+              userInfo.type = 2;
+              alert("管理端登陆成功\n点击图标随时返回主界面")
+
+              const token = true; // 假设返回的 token 存在 response.data.token
+              var cnt = 60;
+              if (this.isRemember == true){
+                cnt = 60*24*7;
+                // alert("222")
+              }else{
+                // alert("333")
+                cnt = 60;
+              }
+              const expiresIn = cnt; // 设置有效期为60秒（1小时）
+              // alert(expiresIn)
+              const expiresAt = Date.now() + expiresIn * 1000; // 计算过期时间
+
+              localStorage.setItem('token', token);
+              localStorage.setItem('expiresAt', expiresAt); // 存储过期时间
+              
+              this.$router.push({ name: 'adget', query: userInfo});
             }
 
           } else {

@@ -132,7 +132,7 @@ export default {
 <style scoped>
 
 .contact-card {
-  margin-left: 5.6em;
+  margin-left: 40%;
   width: 300px;
   border-radius: 10px;
   overflow: hidden;

@@ -129,19 +129,25 @@ func GetPost(c *gin.Context) {
 				break
 			}
 		}
-		if a == 1 {
-			var point = v.SenderID
-			var Accounts_a []models.Accounts
-			db.Where("user_id = ?", point).Find(&Accounts_a)
-			var post = Post_1{
-				PostID:      v.PostID,
-				SenderID:    v.SenderID,
-				Username:    Accounts_a[0].Username,
-				Content:     v.Content,
-				CreatedAt:   v.CreatedAt,
-				ScheduledAt: v.ScheduledAt,
+		now := time.Now()
+		if now.After(v.ScheduledAt) {
+			if a == 1 {
+				var point = v.SenderID
+				var Accounts_a []models.Accounts
+				db.Where("user_id = ?", point).Find(&Accounts_a)
+				var post = Post_1{
+					PostID:      v.PostID,
+					SenderID:    v.SenderID,
+					Username:    Accounts_a[0].Username,
+					Content:     v.Content,
+					CreatedAt:   v.CreatedAt,
+					ScheduledAt: v.ScheduledAt,
+				}
+				if v.Anonymous == 1 {
+					post.Username = "DEAR"
+				}
+				OUTposts = append(OUTposts, post)
 			}
-			OUTposts = append(OUTposts, post)
 		}
 	}
 	// log.Println(PostAll)
@@ -434,4 +440,171 @@ func ProfilePost(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func ReportPost(c *gin.Context) {
+	var req models.ReportReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "Invalid request"})
+		return
+	}
+
+	var TarPost models.Posts
+	if err := db.Where("post_id = ?", req.PostID).First(&TarPost).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"code": 404, "data": nil, "msg": "Post not found or does not belong to the user"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	TarPost.ReportStatus = 1
+
+	if err := db.Save(&TarPost).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	RepotFresh := models.Report{
+		PostID:     req.PostID,
+		ReporterID: req.ReporterID,
+		Reason:     req.Reason,
+		CreatedAt:  time.Now(),
+	}
+	if err := db.Create(&RepotFresh).Error; err != nil {
+		println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 501, "msg": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func GetReport(c *gin.Context) {
+	var TarReport []models.Report
+	if err := db.Find(&TarReport).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+	type out struct {
+		ReportID         int
+		PostID           int
+		ReporterID       int
+		ReporterUsername string
+		ReportedContent  string
+		Reason           string
+		CreatedAt        time.Time
+	}
+	var OUTposts []out
+	for _, v := range TarReport {
+		var temp out
+		temp.PostID = v.PostID
+		temp.Reason = v.Reason
+		temp.ReporterID = v.ReporterID
+		temp.ReportID = v.ReportID
+
+		var RawPost models.Posts
+		if err := db.Where("post_id = ?", v.PostID).Find(&RawPost).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+			return
+		}
+		temp.ReportedContent = RawPost.Content
+
+		var RawUser models.UserInfo
+		if err := db.Where("user_id = ?", v.ReporterID).Find(&RawUser).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+			return
+		}
+		temp.ReporterUsername = RawUser.Username
+		// temp.State = RawPost.State
+
+		OUTposts = append(OUTposts, temp)
+	}
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"report_list": OUTposts}, "msg": "success"})
+}
+
+func ReportHandle(c *gin.Context) {
+	var req models.HandleReportReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": 400, "msg": "Invalid request"})
+		return
+	}
+
+	var TarReport []models.Report
+	if err := db.Where("post_id = ?", req.PostID).Find(&TarReport).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 501, "msg": "Internal server error"})
+		return
+	}
+
+	var TarPost models.Posts
+	if err := db.Where("post_id = ?", req.PostID).First(&TarPost).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"code": 404, "data": nil, "msg": "Post not found or does not belong to the user"})
+			return
+		}
+		println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 501, "msg": "Internal server error"})
+		return
+	}
+	var trashst = 0
+	if req.Approval == 2 {
+		TarPost.ReportStatus = 0
+		trashst = 0 //举报失败
+	} else {
+		TarPost.ReportStatus = 2
+		trashst = 1 //举报成功
+	}
+	if err := db.Save(&TarPost).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 502, "msg": "Internal server error"})
+		return
+	}
+
+	// var TarPost_1 []models.Report
+	// if err := db.Where("post_id = ?", TarReport.PostID).Find(&TarPost_1).Error; err != nil {
+	// 	if err == gorm.ErrRecordNotFound {
+	// 		c.JSON(http.StatusNotFound, gin.H{"code": 404, "data": nil, "msg": "Post not found or does not belong to the user"})
+	// 		return
+	// 	}
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"code": 503, "msg": "Internal server error"})
+	// 	return
+	// }
+
+	var newTrash []models.Trash
+
+	// 迁移 TarPost_1 中的数据到 Trash 表
+	for _, report := range TarReport {
+		trash := models.Trash{
+			ReportID:   report.ReportID,
+			PostID:     report.PostID,
+			ReporterID: report.ReporterID,
+			Reason:     report.Reason,
+			Status:     trashst,
+			CreatedAt:  time.Now(), // 设置为当前时间
+		}
+		newTrash = append(newTrash, trash)
+	}
+
+	if err := db.Create(&newTrash).Error; err != nil {
+		println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 550, "msg": "Internal server error"})
+		return
+	}
+
+	if err := db.Delete(&TarReport).Error; err != nil {
+		println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 504, "msg": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": nil, "msg": "success"})
+}
+
+func GetHistory(c *gin.Context) {
+	var TarTrash []models.Trash
+	if err := db.Find(&TarTrash).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"report_list": TarTrash}, "msg": "success"})
 }

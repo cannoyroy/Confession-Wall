@@ -49,6 +49,18 @@ type ProfileEditReq struct {
 	UserID        int    `json:"user_id"`
 }
 
+type ReportReq struct {
+	PostID     int    `json:"post_id"`
+	Reason     string `json:"reason"`
+	ReporterID int    `json:"reporter_id"`
+}
+
+type HandleReportReq struct {
+	Approval    int    `json:"approval"`
+	CreatedTime string `json:"created_time"`
+	PostID      int    `json:"post_id"`
+}
+
 type Accounts struct {
 	Username  string    `gorm:"column:username;size:20;not null;check:length(username) BETWEEN 3 AND 20"`               // 对应 username 列，长度为 20，不能为空
 	UserID    int       `gorm:"column:user_id;primaryKey;autoIncrement"`                                                // 对应 user_id 列，设置为主键和自增
