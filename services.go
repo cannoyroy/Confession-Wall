@@ -483,3 +483,30 @@ func ReportTrash(c *gin.Context){
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"reportTrashGet": reportTrashG}, "msg": "success"})
 }
+
+func ReportHandle(c *gin.Context){
+	var report models.Report
+
+    err = db.QueryRow("SELECT * FROM Report WHERE Name =? LIMIT 1","PostID").Scan(&report.PostID &report.Reason)
+    if err!= nil {
+        if err == sql.ErrNoRows {
+            fmt.Println("No report found.")
+        } else {
+            c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "Internal server error"})
+		return
+        }
+    }
+
+	// 删除举报表中记录
+	postID:=report.PostID
+    _, err = db.Exec("DELETE FROM all_Report WHERE PostID =?", postID)
+    if err!= nil {
+        return err
+    }
+
+	 // 更新举报垃圾箱
+	 _, err := db.Exec("INSERT INTO Trash SELECT * FROM Report WHERE PostID =?", postID)
+	 if err!= nil {
+		 return err
+	 } 
+}
