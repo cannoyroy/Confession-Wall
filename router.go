@@ -75,4 +75,8 @@ func Init(r *gin.Engine) {
 	r.GET("/admin/reports/history", func(c *gin.Context) {
 		services.ReportTrash(c)
 	})
+
+	r.POST("/admin/reports/handle", func(c *gin.Context) {
+		services.ReportHandle(c)
+	})
 }
