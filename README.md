@@ -1,3 +1,6 @@
+https://apifox.com/apidoc/shared-8863ad74-b56f-4f14-b388-11e52f4b9547
+密码：bbwall
+
 ## 官方要求
 
 基础要求 0. 前端使用Vue全家桶，使用Route进行路由管理，ts进行类型规范，配置路由守卫.
